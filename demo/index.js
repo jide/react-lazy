@@ -1,6 +1,37 @@
 import React, { Component, PropTypes } from 'react/lib/ReactIsomorphic';
 import ReactDOM from 'react-dom';
-import ReactLazy from '../src/ReactLazyElement';
+import ReactElement from 'ReactElement';
+import ReactLazyElement from '../src/ReactLazyElement';
+var assign = require('Object.assign');
+
+function getParameterByName(name, url) {
+  if (!url) url = window.location.href;
+  name = name.replace(/[\[\]]/g, "\\$&");
+  var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+      results = regex.exec(url);
+  if (!results) return null;
+  if (!results[2]) return '';
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
+var lazy = getParameterByName('lazy');
+
+if (lazy) {
+  console.log('lazy');
+}
+else {
+  console.log('normal');
+}
+
+function proxyCreateElement(updatePaths, type, key, props, children) {
+  if (lazy) {
+    return ReactLazyElement.createElement(updatePaths, type, key, props, children);
+  }
+  else {
+    var props = typeof props === 'function' ? props() : props;
+    return ReactElement.createElement(type, key ? assign({ key: key }, props) : props, children);
+  }
+}
 
 class Bold extends Component {
   shouldComponentUpdate(nextProps) {
@@ -8,7 +39,7 @@ class Bold extends Component {
   }
 
   render() {
-    return ReactLazy.createElement(false, 'b', null, () => ({ }), this.props.label);
+    return proxyCreateElement(false, 'b', null, () => ({ }), this.props.label);
   }
 }
 
@@ -18,10 +49,10 @@ class Button extends Component {
   }
 
   render() {
-    return ReactLazy.createElement(false, 'div', null, () => ({ onClick: this.props.onClick, style: { padding: 10, display: 'inline-block', border: '1px solid black' } }),
+    return proxyCreateElement(false, 'div', null, () => ({ onClick: this.props.onClick, style: { padding: 10, display: 'inline-block', border: '1px solid black' } }),
       [
         this.props.label,
-        ReactLazy.createElement(false, Bold, null, () => ({ label: this.props.label }), null)
+        proxyCreateElement(false, Bold, null, () => ({ label: this.props.label }), null)
       ]
     );
   }
@@ -40,7 +71,7 @@ class App extends Component {
 
     var it = setInterval(() => {
       i++;
-      if (i < 1000) {
+      if (i < 500) {
         this.handleClick();
         setTimeout(() =>  this.handleClick2(), 15);
       }
@@ -69,7 +100,7 @@ class App extends Component {
   }
 
   renderChildren(children) {
-    return children.map(i => ReactLazy.createElement(null, 'div', null, null, i * 10));
+    return children.map(i => proxyCreateElement(null, 'div', null, null, i * 10));
   }
 
   render() {
@@ -79,27 +110,30 @@ class App extends Component {
       children.push(i);
     }
 
-    return ReactLazy.createElement(false, 'div', 'test', null,
-      ReactLazy.createElement(false, 'div', 'test2', null,
-        ReactLazy.createElement(false, 'div', null, null, [
-          ReactLazy.createElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
-          ReactLazy.createElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
-          ReactLazy.createElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
-          ReactLazy.createElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
-          ReactLazy.createElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
-          ReactLazy.createElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
-          ReactLazy.createElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
-          ReactLazy.createElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null)
+    return proxyCreateElement(false, 'div', 'test', null,
+      proxyCreateElement(false, 'div', 'test2', null,
+        proxyCreateElement(false, 'div', null, null, [
+          proxyCreateElement(false, 'a', null, { href: '/' }, 'normal'),
+          ' ',
+          proxyCreateElement(false, 'a', null, { href: '?lazy=1' }, 'lazy'),
+          proxyCreateElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
+          proxyCreateElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
+          proxyCreateElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
+          proxyCreateElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
+          proxyCreateElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
+          proxyCreateElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
+          proxyCreateElement('state.counter', 'div', null, () => ({ onClick: this.handleClick.bind(this), style: { color: 'white', background: 'blue', width: this.state.counter * 30 } }), this.state.counter),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null),
+          proxyCreateElement('state.crosses', Button, null, () => ({ onClick: this.handleClick2.bind(this), label: this.state.crosses }), null)
         ])
       )
     );

@@ -1,28 +1,3 @@
-
-/*
-- first render
-- owned compos that have __source are registered to owner :
-  this._currentElement._owner.registerFast({ state: ['message'] }, this)
-- owner now has :
-  this._fastUpdates = [
-    {
-      state: {
-        message: true
-      },
-      component,
-      callback
-    }
-  ]
-- A render is about to be called
-- check state and props that have changed
-  - if matches, update manually components that are registered using callback
-    - this._inFastUpdatePaths = true
-    - call render, without re-rendering, get variables
-    - update components for this path, passing variables
-  - otherwise normal render
-*/
-
-//import ReactMultiChild from 'react/lib/ReactMultiChild';
 import ReactDOMComponent from 'react/lib/ReactDOMComponent';
 
 var assign = require('Object.assign');
@@ -72,39 +47,6 @@ function assertValidProps(component, props) {
 }
 
 class ReactFastUpdateDOMComponent extends ReactDOMComponent {
-
-  /**
-   * Generates root tag markup then recurses. This method has side effects and
-   * is not idempotent.
-   *
-   * @internal
-   * @param {ReactReconcileTransaction|ReactServerRenderingTransaction} transaction
-   * @param {?ReactDOMComponent} the containing DOM component instance
-   * @param {?object} info about the native container
-   * @param {object} context
-   * @return {string} The computed markup.
-   */
-  mountComponent(transaction, nativeParent, nativeContainerInfo, context) {
-    //console.log(transaction, nativeParent, nativeContainerInfo, context);
-
-    return super.mountComponent(transaction, nativeParent, nativeContainerInfo, context);
-  }
-
-  // updateComponent(transaction, prevElement, nextElement, context) {
-  //   var lastProps = prevElement.props;
-  //   var nextProps = this._currentElement.props;
-
-  //   console.log(prevElement, nextElement);
-  //   if (!nextElement.props.__lazy) {
-  //     console.log('ok');
-  //     super.updateComponent(transaction, prevElement, nextElement, context);
-  //   }
-  //   else {
-  //     this._updateDOMChildren(lastProps, nextProps, transaction, context);
-  //   }
-  // }
-
-
   updateComponent(transaction, prevElement, nextElement, context) {
     var lastProps = prevElement.props;
     var nextProps = this._currentElement.props;
