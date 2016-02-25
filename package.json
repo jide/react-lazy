@@ -1,0 +1,32 @@
+{
+  "name": "react-dom-custom",
+  "version": "0.0.0",
+  "description": "Custom DOM renderer.",
+  "main": "lib/index.js",
+  "scripts": {
+    "dev": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base demo",
+    "deploy": "NODE_ENV=production ./node_modules/webpack/bin/webpack.js -p --config webpack.production.config.js"
+  },
+  "keywords": [
+    "react"
+  ],
+  "author": "jide",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-plugin-dev": "https://github.com/Zenwolf/babel-plugin-dev#a70da693af5c12b2dcf16ed6f1402d32256c22ab",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.3.13",
+    "babel-preset-stage-0": "^6.3.13",
+    "react": "0.15.0-alpha.1",
+    "react-dom": "0.15.0-alpha.1",
+    "webpack": "^1.12.12",
+    "webpack-dev-server": "^1.14.1"
+  },
+  "peerDependencies": {
+    "exenv": "^1.2.0",
+    "react": "0.15.0-alpha.1",
+    "react-dom": "0.15.0-alpha.1"
+  }
+}
